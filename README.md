@@ -3,24 +3,26 @@
 
 ## Forensic Reproducibility and Grounded Experimentation for Real Infrastructures
 
-**FORGE-RI** is an open  platform for reproducible **Digital Forensics and Incident Response (DFIR)** experimentation in **IT/OT** environments.
+**FORGE-RI** (Forensic Reproducibility and Grounded Experimentation for Real Infrastructures) extends the original virtualized IT/OT DFIR platform to accommodate **real industrial components, virtual assets, and hybrid physical–virtual scenarios**. It retains the case-centered evidence and reconstruction workflow while defining an integration path for 3D industrial digital twins and physically connected systems.
 
 It links controlled scenario deployment, incident execution, detection, volatility-aware acquisition, verifiable preservation, post-acquisition analysis, forensic reconstruction, and cross-run comparison inside a single auditable workflow.
 
-The platform supports two complementary uses:
+The platform supports three complementary uses:
 
 - **Research-oriented DFIR experimentation**, where the forensic case is treated as the experimental unit.
 - **Structured cybersecurity and DFIR training**, where users interact with realistic tools, scenarios, attacks, detections, acquisition workflows, and forensic reporting surfaces.
+- **Industrial digital-twin investigation**, where physical equipment and virtual counterparts can be monitored, compared, and investigated through preserved evidence and clearly attributed state observations.
 
 A typical FORGE-RI execution follows this chain:
 
 ```text
-Scenario declaration
-  -> controlled deployment
-  -> tool preparation
-  -> controlled incident execution
+Scenario declaration (virtual / physical / hybrid)
+  -> virtual deployment and/or authorized physical asset connection
+  -> tool and sensor preparation
+  -> industrial signal and twin-state observation
+  -> controlled incident or fault execution (where permitted)
   -> detection and alert handling
-  -> evidence acquisition
+  -> evidence acquisition (IT / OT / physical telemetry / twin events)
   -> preservation and custody
   -> post-acquisition analysis
   -> forensic reconstruction
@@ -31,9 +33,53 @@ The next section describes the infrastructure required to run this workflow.
 
 ---
 
+## Platform Evolution: Virtual, Real, and Hybrid IT/OT
+
+FORGE-RI **does not replace or remove** the virtual-machine-based capabilities of FORGE-VI. It broadens the supported *scenario model* to include:
+
+| Scenario mode | Infrastructure | Intended observations |
+|---|---|---|
+| **Virtual** | OpenStack nodes, virtual PLC, virtual SCADA/HMI and simulated equipment | PCAP, memory, snapshots, alerts, simulated OT state |
+| **Physical** | Real PLCs, robots, sensors, actuators, industrial PCs and IoT gateways | Network traces, available controller logs/registers, sensor values, machine state and gateway records |
+| **Hybrid** | Real equipment interacting with virtual hosts, emulated PLCs or 3D twins | Correlated physical and virtual events, command paths, state changes and detection results |
+
+**Implementation status:** the README below documents an existing OpenStack-centered DFIR baseline. The real-asset onboarding, TwinAxisLab integration and FORGE-DT observability discussed here are integration objectives, not a declaration that the current FORGE-RI repository already implements or validates every capability.
+
+### Integration with TwinAxisLab
+
+The planned industrial 3D integration will draw on [TwinAxisLab](https://github.com/Younyat/TwinAxisLab). Its independently documented capabilities include asset import, mechanical/kinematic models, functional components, industrial signal mapping, live twin monitoring, historical replay and connectivity through Modbus, MQTT, and an OPC UA gateway. FORGE-RI should use these as a **separate engineering and operational layer**, not silently treat 3D geometry or its runtime as original forensic evidence.
+
+The integration target includes:
+
+- import of 3D industrial assets and configurable joint/axis models;
+- representation of physical equipment through inspectable digital counterparts;
+- explicit signal bindings for industrial controller variables and sensor telemetry;
+- observation of *reported* versus *expected* or *desired* state, with source and quality metadata;
+- safe read-only inspection by default and separately authorized, controlled command pathways;
+- collection of event and trace records as potential input to the FORGE-RI preservation pipeline;
+- replay of historical state **without replay-triggered commands to physical equipment**.
+
+### Integration with FORGE-DT
+
+[FORGE-DT](https://github.com/Younyat/FORGE-DT) is a related branch of the FORGE family. The intended integration brings digital-twin-oriented analysis into the case-centered workflow, especially:
+
+- explicit expected, commanded, observed and reconstructed state models;
+- investigation of state divergence under controlled fault or incident scenarios;
+- evidence-backed links between controller commands, telemetry, physical response and twin state;
+- structured uncertainty where real-world visibility is incomplete;
+- separation between forensic observations, modeled expectations, and derived conclusions.
+
+These digital-twin capabilities must be integrated and evaluated within FORGE-RI before they can be claimed as operational features of this repository.
+
+### Safety and scientific boundary
+
+A physical industrial process is **not** equivalent to a disposable virtual test bed. Any active probing, fault injection, write command, robot motion, PLC modification or attack scenario requires explicit authorization, device-specific interlocks, documented safe ranges, emergency-stop arrangements and an appropriate test environment. Baseline virtual attack automation must not be automatically enabled on production systems.
+
+---
+
 ## 1. Infrastructure Deployment
 
-FORGE-RI runs over a local OpenStack-based virtualized infrastructure. The infrastructure must be deployed before using the scenario editors, dashboards, attack workflows, and forensic modules.
+The **legacy virtualized deployment mode** uses a local OpenStack environment. FORGE-RI additionally targets real industrial assets and mixed physical–virtual scenarios; these modes do **not** inherently require that physical PLCs, robots, or gateways run inside OpenStack. Physical connectivity, credentials, network segmentation, safety interlocks, and compatible acquisition backends must be configured separately. The commands below describe the retained OpenStack workflow, not a verified universal installer for physical integration.
 
 ### 1.1 Baseline Host Requirements
 
@@ -49,7 +95,7 @@ If the platform is executed inside **VirtualBox** or **VMware**, virtualization 
 
 Without nested virtualization, the OpenStack environment may fail to deploy correctly or may behave unreliably.
 
-A full OpenStack deployment typically takes around **30 minutes** under the baseline conditions.
+The historical OpenStack baseline reports approximately **30 minutes** for deployment under the stated conditions; this is not a measured deployment time for real or hybrid installations.
 
 ### 1.2 Deploy the OpenStack Environment
 
@@ -81,7 +127,7 @@ and avoid committing environment-specific credentials.
 
 ### 1.3 Start the Platform UI
 
-To launch the FORGE-VI dashboards, run:
+To launch the FORGE-RI dashboards, run:
 
 ```bash
 bash start_dashboard.sh
@@ -107,12 +153,12 @@ After the infrastructure is available, the platform workflow can be executed fro
 
 ## 2. Platform Workflow
 
-FORGE-VI follows a progressive workflow:
+FORGE-RI retains the original virtual DFIR workflow and extends its target architecture toward physical and hybrid scenarios. The existing sequence is:
 
 1. **Deploy the OpenStack infrastructure**
 2. **Start the platform dashboards**
 3. **Create the base IT scenario**
-4. **Extend the scenario with industrial components when needed**
+4. **Extend the scenario with industrial components when needed** (virtual devices in the existing editor; real-device onboarding requires the corresponding connector)
 5. **Install the required tools on the deployed nodes**
 6. **Access the installed tools through the operational portal**
 7. **Execute controlled attack and detection exercises**
@@ -129,9 +175,13 @@ The next section explains the methodological model behind the workflow.
 
 ---
 
+### Real and Hybrid Workflow Extension
+
+When the corresponding integrations are available, an experimental run should additionally: (1) register authorized physical assets, (2) establish read-only monitoring and map signals to a twin, (3) synchronize available clocks and record uncertainties, (4) preserve command, telemetry and physical-state observations, (5) compare expected and observed state, and (6) reconstruct the incident with a clear distinction between observations and model-derived explanations. OpenStack provisioning remains optional for a purely physical scenario.
+
 ## 3. Scientific Workflow Model
 
-FORGE-VI is not designed as a collection of isolated tools. It is designed as a controlled workflow for cybersecurity experimentation, evidence preservation, forensic analysis, reconstruction, and reproducibility-oriented comparison in virtualized IT/OT environments.
+FORGE-RI is not designed as a collection of isolated tools. It preserves the controlled DFIR methodology of the virtualized IT/OT baseline while broadening the *target scope* to real industrial systems and their digital counterparts. Actual coverage of physical sources depends on device access, supported protocols, time synchronization and acquisition readiness.
 
 The platform follows a simple methodological rule:
 
@@ -218,15 +268,15 @@ The next section describes the main platform services that expose these layers t
 
 ## 4. Main Platform Services
 
-FORGE-VI is organized into a set of dashboards and services that expose the complete experimental workflow, from scenario creation to incident execution, forensic acquisition, analysis, reconstruction, and cross-run comparison.
+FORGE-RI is organized into a set of dashboards and services that expose the complete experimental workflow, from scenario creation to incident execution, forensic acquisition, analysis, reconstruction, and cross-run comparison.
 
 The services are presented in the same order in which a user normally interacts with the platform.
 
 ---
 
-### 4.1 FORGE-VI Home Dashboard
+### 4.1 FORGE-RI Home Dashboard
 
-The **FORGE-VI Home Dashboard** is the main entry point of the platform.
+The **FORGE-RI Home Dashboard** is the main entry point of the platform.
 
 It provides a unified overview of the current experimental environment, including scenario state, operational readiness, forensic readiness, reconstruction status, and scientific evidence indicators.
 
@@ -245,7 +295,7 @@ It exposes:
 - CPR-oriented reconstruction information;
 - recent platform activity.
 
-![FORGE-VI Home Dashboard](Images_readme/FORGE_VI_HOME_PAGE.png)
+![FORGE-RI Home Dashboard](Images_readme/FORGE_VI_HOME_PAGE.png)
 
 The workflow then moves from the global platform overview to scenario construction.
 
@@ -279,7 +329,7 @@ The IT scenario can then be extended with industrial components.
 
 The **Industrial Scenario Editor** extends the base IT topology with OT-oriented components.
 
-It allows the user to add industrial nodes such as PLC, SCADA, or HMI components and connect them to the existing IT scenario. This creates a virtualized IT/OT environment suitable for controlled industrial cybersecurity and DFIR experimentation.
+It allows the user to add industrial nodes such as PLC, SCADA, or HMI components and connect them to the existing IT scenario. In the existing implementation this creates a virtualized IT/OT environment suitable for controlled industrial cybersecurity and DFIR experimentation. The FORGE-RI extension additionally specifies discoverable physical assets and mixed topologies; support for individual devices must be verified rather than assumed.
 
 The editor supports:
 
@@ -544,7 +594,7 @@ The final service supports movement of selected artifacts to external laboratory
 
 ### 4.13 Remote Lab Exchange Dashboard
 
-The **Remote Lab Exchange Dashboard** supports controlled exchange of selected artifacts between FORGE-VI and external analysis environments.
+The **Remote Lab Exchange Dashboard** supports controlled exchange of selected artifacts between FORGE-RI and external analysis environments.
 
 It can be used to:
 
@@ -553,7 +603,7 @@ It can be used to:
 - support external tool execution;
 - preserve the distinction between platform-managed evidence and externally produced results.
 
-This service is useful when specialized tools are executed outside the platform while the main experiment remains organized through FORGE-VI.
+This service is useful when specialized tools are executed outside the platform while the main experiment remains organized through FORGE-RI.
 
 ![Remote Lab Exchange Dashboard](Images_readme/LAB_EXCHANGE_DASHBOARD.png)
 
@@ -582,76 +632,68 @@ Completed campaigns can then be replayed as a fully navigable 3D reconstruction.
 
 ### 4.15 3D Campaign Reconstruction View
 
-The **3D Campaign Reconstruction View** replays an already-completed campaign as a chronologically accurate, fully navigable 3D scene, built progressively from the same real execution records exposed elsewhere in the platform — never a live view, and never able to affect a real machine.
+The **3D Campaign Reconstruction View** replays an already-completed campaign as a chronologically organized, navigable 3D scene using recorded execution events. This is **historical replay, not live physical-machine control**. The view follows instance deployment, tool preparation, incident execution, detection, evidence acquisition and sealing, analysis, causal reconstruction and campaign comparison.
 
-The replay follows the real sequence of a campaign from the ground up: instance deployment, tool installation, controlled attacks, detection outcomes, forensic case creation, evidence preservation, multilayer analysis, causal reconstruction, case sealing, and the final cross-run comparison — each stage materializing in the scene as it is reached, with the camera following the current stage so the user never loses track of what is being shown.
+The existing view includes:
 
-The view includes:
-
-- a navigable 3D hierarchy from campaign, to repetition, to case, to host, matching the real execution structure;
-- real-time traveling indicators along the connections between stages, representing data, evidence, or control flow moving between them;
-- a dedicated **Alert Center**, in both the side panel and the 3D scene itself, that highlights the campaign's most significant real events — attacks, detections, fault-injection outcomes, and computed metrics — each with a brief camera visit and a plain-language explanation;
-- per-repetition and per-campaign **report cards**, summarizing reconstruction confidence, reproducibility, and evidence-coverage metrics in a dedicated, readable area of the scene;
-- playback controls (play, pause, step, reset, seek, and adjustable speed) for inspecting any point in the replay at the user's own pace.
+- a hierarchical 3D navigation path from campaign to repetition, case and host;
+- animated flow indicators between workflow stages;
+- an Alert Center highlighting recorded attacks, detections, fault-injection results and metrics;
+- per-repetition and campaign summaries for evidence coverage and reconstruction;
+- play, pause, step, reset, seek and playback speed controls;
+- a digital twin watcher reporting whether recorded divergences were detected and later resolved.
 
 ![3D Campaign Reconstruction View](Images_readme/3d_compaing.png)
 
-This view is paired with a **digital twin watcher**, a persistent on-screen presence that follows the replay and reports, in real time and in plain language, whether the platform's own digital twin genuinely noticed each real divergence it is shown — and whether that divergence was later resolved.
-
 ![3D Campaign Reconstruction View - Two-Repetition Campaign Replay](Images_readme/3D_Campaign_Reconstruction_View.png)
 
-The next section introduces the live digital twin monitor.
+**FORGE-RI extension:** when real industrial devices and their twins become connected, replay records should identify physical versus virtual event sources, preserve original timestamps and mark observational gaps. Replay must remain isolated from live control outputs.
 
 ---
 
 ### 4.16 Digital Twin View
 
-The **Digital Twin View** is the platform's live, continuously running monitor for the currently deployed scenario. Unlike the reconstruction view above, it reflects the real, present state of the deployed environment, not a replay of a past campaign.
+The existing **Digital Twin View** continuously observes the deployed scenario and compares recorded expectations with reported current state. Its checks include configuration, service health, clock synchronization, network exposure, resources and available industrial-process indicators. The monitoring view is **read-only**: detecting a discrepancy does not authorize or trigger changes to physical equipment.
 
-It compares the expected behavior of each monitored node against what is actually observed, and surfaces any divergence as soon as it is detected — covering configuration integrity, service availability, clock synchronization, network exposure, resource usage, and industrial process state where applicable.
-
-The view supports:
-
-- a continuous, read-only monitoring loop over every live node in scope;
-- real divergence events, each tied to the specific check that produced it;
-- severity-aware presentation, distinguishing a resolved deviation from a still-unresolved discrepancy;
-- a running history of past observations for each node, independent of the current state.
-
-The digital twin never takes corrective action on its own — it only observes, records, and reports, so that every divergence it surfaces remains independently verifiable against the platform's other evidence sources.
-
-The next section introduces the controlled fault-injection capability.
+The view keeps source-linked divergence events, their severity, resolution status and observational history. The intended physical-infrastructure extension will map live controller and machine telemetry to 3D twins, while explicitly distinguishing **expected**, **commanded**, **measured** and **visualized** states.
 
 ---
 
 ### 4.17 Fault Injection Dashboard
 
-The **Fault Injection Dashboard** supports controlled, reversible fault injection against deployed nodes, as a complementary experimental capability to the attack and detection workflow described earlier.
+The existing **Fault Injection Dashboard** is designed for controlled, reversible fault exercises on deployed laboratory nodes. It provides fault profiles, rollback behavior, experiment-linked and manual launches, control/treatment comparison and effectiveness indicators showing whether the disturbance occurred and was noticed by the digital twin.
 
-Where the attack layer models an adversary's actions, fault injection models real operational or environmental failures — a configuration drift, a stopped detection service, a clock skew, a resource exhaustion condition — so that the platform's detection and reconstruction capabilities can be evaluated against both intentional attacks and incidental failures.
+Supported examples in the documented virtualized baseline include configuration drift, detection-service interruption, clock skew and resource exhaustion. **These laboratory fault mechanisms must not be assumed safe on real PLCs, robotic systems or production machinery.** Physical fault injection requires independent approval, device-specific safety limits and rollback verification.
 
-The dashboard supports:
+---
 
-- a catalog of reversible fault types, each with a documented safety profile and rollback behavior;
-- launching a fault either attached to a running campaign or applied directly, on demand, against a selected node;
-- an alternating control/treatment launch design, so a fault's real effect can be assessed against a genuine baseline rather than a single uncontrolled run;
-- a real effectiveness view, reporting whether each applied fault measurably took hold, whether the digital twin detected it, and whether supporting evidence was linked to it;
-- automatic reversal of every injected fault once its evaluation window closes.
+### 4.18 Real and Hybrid Industrial Asset Integration (Integration Target)
 
-Every fault type is scoped and sandboxed so that its effect is confined, reversible, and never capable of compromising the platform's own orchestration or a real campaign's own data.
+The extended infrastructure model should register real PLCs, industrial robots, sensors, IoT gateways, HMIs and their related virtual nodes with stable asset identifiers. Each asset needs a physical/virtual designation, accessible interfaces, authorization information, clock source, operational constraints and supported evidence sources. A virtual PLC linked to a virtual arm must remain distinguishable from a physical PLC commanding a real actuator.
 
-The next section describes the evidence model used by the forensic services.
+### 4.19 Industrial 3D Digital Twin and Signal Mapping (TwinAxisLab Integration Target)
+
+The intended [TwinAxisLab](https://github.com/Younyat/TwinAxisLab) integration adds 3D asset preparation, joints and kinematic representations, functional components, assemblies, signal mapping, industrial connectivity, monitoring and historical replay. Signal bindings should capture protocol, endpoint, address, units, scaling, access mode, source quality and timestamp. A 3D animation is a representation and does not itself prove physical motion. Write or motion commands to real equipment must remain explicitly authorized and interlocked.
+
+### 4.20 Forensic State Divergence and Evidence Correlation (FORGE-DT Integration Target)
+
+The intended [FORGE-DT](https://github.com/Younyat/FORGE-DT) integration will associate reference-state models with real observations, generating attributable divergence events, uncertainty indicators and supporting forensic artifacts. Links between a PLC command, network traffic, sensor reading, machine response and twin visualization should be reconstructed only where evidence supports the relation. A discrepancy is not, by itself, proof of a cyberattack.
+
+### 4.21 Radio Evidence Acquisition (Future Extension)
+
+FORGE-RI may later incorporate RF receivers and wireless-protocol sniffers to acquire IQ recordings, spectrum observations and wireless traffic as additional case evidence. This is a **future integration objective**, not a validated feature of the current repository. Frequency/channel coverage, receiver setup, timing, original data preservation and provenance will be essential for cross-domain correlation.
 
 ---
 
 ## 5. Evidence Model
 
-FORGE-VI treats evidence handling as part of the experimental procedure. Each incident execution can materialize as a forensic case under the evidence store.
+FORGE-RI treats evidence handling as part of the experimental procedure. Each incident execution can materialize as a forensic case under the evidence store.
 
 A case is identified by a stable case identifier and contains preserved artifacts, metadata, integrity records, custody records, pipeline events, and derived analysis outputs.
 
 ### 5.1 Case as Experimental Unit
 
-In FORGE-VI, the forensic case is the unit used for preservation, analysis, reconstruction, and comparison.
+In FORGE-RI, the forensic case is the unit used for preservation, analysis, reconstruction, and comparison.
 
 A case records:
 
@@ -689,7 +731,7 @@ The exact content depends on the acquisition profile and scenario type.
 
 ### 5.3 Primary and Derived Artifacts
 
-FORGE-VI separates primary evidence from derived artifacts.
+FORGE-RI separates primary evidence from derived artifacts.
 
 Primary evidence includes preserved artifacts such as:
 
@@ -719,9 +761,24 @@ The next section explains how acquisition profiles populate this evidence model.
 
 ---
 
+### 5.4 Physical-Asset and Digital-Twin Evidence (Target Model)
+
+A future physical/hybrid case should distinguish **original observations** (captured controller telemetry, sensor readings, network traces, field-system logs, timestamps and source metadata) from **derived records** (3D state visualizations, reconstructed motion, calculated state divergence and explanatory timelines). The case should identify the observation mechanism, sampling interval, clock synchronization, missing intervals, uncertainty and device/protocol details.
+
+A target evidence package can add optional locations without changing the legacy case layout:
+
+```text
+physical_assets/      # real equipment inventory, controller/gateway observations
+industrial_signals/   # timestamped signal values and quality metadata
+digital_twin/         # versioned twin definition, state traces, mappings and divergence outputs
+radio/                # optional future IQ and wireless capture evidence
+```
+
+These directories describe an integration schema and do not imply that the current acquisition backend already creates them.
+
 ## 6. Acquisition and Preservation Model
 
-FORGE-VI uses profile-conditioned acquisition. This means that the selected trigger and scenario context determine which acquisition procedure is executed.
+FORGE-RI uses profile-conditioned acquisition. This means that the selected trigger and scenario context determine which acquisition procedure is executed.
 
 ### 6.1 Alert-to-Profile Resolution
 
@@ -750,7 +807,7 @@ The platform records:
 
 ### 6.2 Evidence Sources
 
-Depending on the active profile, FORGE-VI can preserve:
+Depending on the active profile, FORGE-RI can preserve:
 
 - network traffic;
 - volatile memory;
@@ -781,7 +838,7 @@ The evaluated industrial baseline is centered on Modbus/TCP-style observation, w
 
 ### 6.4 Integrity and Custody
 
-FORGE-VI records preservation and handling steps through:
+FORGE-RI records preservation and handling steps through:
 
 - manifest entries;
 - cryptographic hashes;
@@ -798,7 +855,7 @@ The next section describes how controlled incident profiles connect the attack l
 
 ## 7. Attack and Detection Model
 
-FORGE-VI uses controlled attack profiles to generate incident conditions under documented constraints.
+FORGE-RI uses controlled attack profiles to generate incident conditions under documented constraints.
 
 Each attack profile can define:
 
@@ -843,7 +900,7 @@ A detection workflow can preserve:
 
 ### 7.3 Safety and Scope
 
-FORGE-VI attack profiles are intended for controlled laboratory scenarios deployed by the platform.
+FORGE-RI attack profiles are intended for controlled laboratory scenarios deployed by the platform.
 
 They are not intended for production systems, unauthorized networks, or uncontrolled environments.
 
@@ -853,7 +910,7 @@ The next section describes how preserved evidence is reconstructed and compared.
 
 ## 8. Reconstruction and Reproducibility
 
-FORGE-VI separates preservation from reconstruction.
+FORGE-RI separates preservation from reconstruction.
 
 A case may be well preserved and still have degraded, ambiguous, or missing causal relations. The reconstruction layer makes this distinction explicit.
 
@@ -895,7 +952,7 @@ CPR treats every expected edge equally; WCPR uses the scenario-defined per-edge 
 
 ### 8.3 Reproducibility Levels
 
-FORGE-VI supports repetition-oriented organization through:
+FORGE-RI supports repetition-oriented organization through:
 
 ```text
 Level A -> re-analysis of the same sealed case
@@ -907,7 +964,7 @@ These levels allow the user to distinguish analytical repeatability, incident re
 
 ### 8.4 Scientific Memory and Comparison Families
 
-FORGE-VI can organize repeated outputs into comparison families.
+FORGE-RI can organize repeated outputs into comparison families.
 
 A comparison family can group cases according to:
 
@@ -927,7 +984,7 @@ The next section gives a practical end-to-end usage sequence.
 
 ## 9. End-to-End Usage Sequence
 
-A complete FORGE-VI workflow can be executed as follows.
+A complete FORGE-RI workflow can be executed as follows.
 
 ### Step 1: Deploy the Infrastructure
 
@@ -981,13 +1038,21 @@ Use the **FOC Reconstruction Dashboard** to bind the incident window, preserved 
 
 Use the **Forensic Repetition Manager** and **Forensic Reconstruction Comparability View** to compare cases generated under documented repetition conditions.
 
+### Step 13: Replay a Completed Campaign in 3D
+
+Use the **3D Campaign Reconstruction View** to inspect recorded events, alerts and causal stages in chronological order, without sending commands to physical equipment.
+
+### Step 14: Review Digital Twin Divergences and Controlled Fault Results
+
+Use the **Digital Twin View** and **Fault Injection Dashboard** to inspect observed deviations, their evidentiary support and permitted laboratory fault outcomes. Physical connections and safety approval are separate integration requirements.
+
 The next section lists the main strengths exposed by this workflow.
 
 ---
 
-## 10. Key Platform Strengths
+## 10. Baseline Capabilities and Planned Extensions
 
-FORGE-VI provides:
+The inherited virtualized baseline provides:
 
 - automated OpenStack-based infrastructure deployment;
 - visual IT scenario construction;
@@ -1011,8 +1076,13 @@ FORGE-VI provides:
 - Level A, Level B, and Level C repetition organization;
 - cross-run comparability views;
 - research and training usability.
+- chronological **3D campaign reconstruction** with navigable replay and campaign-level reports;
+- live, read-only **Digital Twin View** with divergence history;
+- controlled laboratory **Fault Injection Dashboard** with effectiveness and rollback reporting.
 
-The next section maps these capabilities to repository paths.
+The FORGE-RI integration roadmap additionally includes physical-asset onboarding, hybrid topologies, TwinAxisLab-derived 3D/kinematic digital twins, FORGE-DT-style state-divergence investigation, and optional later RF acquisition. These items are **integration targets until implemented and verified in FORGE-RI**.
+
+The next section maps the documented baseline capabilities to repository paths.
 
 ---
 
@@ -1070,13 +1140,13 @@ The next section defines the intended scope of the platform.
 
 ## 12. Scope
 
-FORGE-VI is designed for controlled virtualized experimentation, research, training, and reproducibility-oriented DFIR workflows.
+FORGE-RI is designed for controlled experimentation, research, training, and reproducibility-oriented DFIR workflows across virtual IT/OT environments and, subject to integration and safety validation, real and hybrid industrial infrastructures.
 
 It is intended for:
 
 - local laboratory environments;
 - controlled cybersecurity experimentation;
-- virtualized IT/OT scenarios;
+- virtualized, physical, and hybrid IT/OT scenarios, subject to the availability of connectors and appropriate authorizations;
 - educational exercises;
 - forensic acquisition and preservation studies;
 - post-incident reconstruction experiments;
@@ -1090,14 +1160,14 @@ It is not intended for:
 - certification of real-world forensic completeness;
 - replacement of professional incident-response procedures in operational environments.
 
-Physical process fidelity is intentionally bounded by the virtualized and instrumented nature of the platform. The platform prioritizes controlled repetition, evidence traceability, auditable preservation, reconstruction support, and comparative analysis.
+Physical process fidelity and observability depend on whether the case uses simulated equipment, instrumented real equipment, or both. The platform prioritizes controlled repetition, evidence traceability, auditable preservation, reconstruction support, and comparative analysis.
 
 The next section describes safe repository hygiene before sharing or publishing deployments.
 
 ---
 ## 13. Repository Content and Artifact Management
 
-The FORGE-VI repository retains the source code, scenario definitions, deployment configuration, attack and detection profiles, acquisition procedures, analysis components, documentation, and lightweight metadata required to understand and re-execute the latest documented experimental scenario.
+The FORGE-RI repository retains the source code, scenario definitions, deployment configuration, attack and detection profiles, acquisition procedures, analysis components, documentation, and lightweight metadata required to understand and re-execute the latest documented experimental scenario.
 
 ## Sensitive and Environment-Specific Files
 
@@ -1142,7 +1212,7 @@ wget-log
 
 ## Large Experimental and Forensic Artifacts
 
-A FORGE-VI execution can generate large forensic artifacts, including memory images, disk images or snapshots, network captures, industrial evidence exports, case evidence collections, analysis outputs, and execution-event records.
+A FORGE-RI execution can generate large forensic artifacts, including memory images, disk images or snapshots, network captures, industrial evidence exports, case evidence collections, analysis outputs, and execution-event records.
 
 Typical storage consumption for a completed case, per artifact type:
 
@@ -1215,11 +1285,11 @@ The next section describes where the full evidentiary package for the reported c
 ---
 
 
-## 14. Verification Dataset
+## 14. Historical FORGE-VI Verification Dataset
 
-The large artifacts excluded from this repository under Section 13 — the complete sealed forensic case and the campaign-level records supporting the reported experimental results — are distributed separately as a standalone verification dataset through Zenodo.
+The historical **FORGE-VI virtualized baseline** verification dataset is distributed separately through Zenodo. It must not be interpreted as validation of new FORGE-RI physical-device or digital-twin integration capabilities.
 
-The verification dataset contains:
+The historical virtualized verification dataset contains:
 
 - one complete sealed forensic case from the reported reconstruction campaign;
 - campaign-level records for all ten reported executions;
