@@ -1,9 +1,9 @@
 
-# FORGE-RI
+# FORGE-HI
 
-## Forensic Reproducibility and Grounded Experimentation for Real Infrastructures
+## Forensic Reproducibility and Grounded Experimentation for Hybrid Infrastructures
 
-**FORGE-RI** (Forensic Reproducibility and Grounded Experimentation for Real Infrastructures) extends the original virtualized IT/OT DFIR platform to accommodate **real industrial components, virtual assets, and hybrid physical–virtual scenarios**. It retains the case-centered evidence and reconstruction workflow while defining an integration path for 3D industrial digital twins and physically connected systems.
+**FORGE-HI** (Forensic Reproducibility and Grounded Experimentation for Hybrid Infrastructures) extends the original virtualized IT/OT DFIR platform to accommodate **hybrid infrastructures combining physical industrial components and virtual assets, while retaining purely virtual and physical scenario modes**. It retains the case-centered evidence and reconstruction workflow while defining an integration path for 3D industrial digital twins and physically connected systems.
 
 It links controlled scenario deployment, incident execution, detection, volatility-aware acquisition, verifiable preservation, post-acquisition analysis, forensic reconstruction, and cross-run comparison inside a single auditable workflow.
 
@@ -13,7 +13,7 @@ The platform supports three complementary uses:
 - **Structured cybersecurity and DFIR training**, where users interact with realistic tools, scenarios, attacks, detections, acquisition workflows, and forensic reporting surfaces.
 - **Industrial digital-twin investigation**, where physical equipment and virtual counterparts can be monitored, compared, and investigated through preserved evidence and clearly attributed state observations.
 
-A typical FORGE-RI execution follows this chain:
+A typical FORGE-HI execution follows this chain:
 
 ```text
 Scenario declaration (virtual / physical / hybrid)
@@ -33,9 +33,9 @@ The next section describes the infrastructure required to run this workflow.
 
 ---
 
-## Platform Evolution: Virtual, Real, and Hybrid IT/OT
+## Platform Evolution: Virtual, Physical, and Hybrid IT/OT
 
-FORGE-RI **does not replace or remove** the virtual-machine-based capabilities of FORGE-VI. It broadens the supported *scenario model* to include:
+FORGE-HI **does not replace or remove** the virtual-machine-based capabilities of FORGE-VI. It broadens the supported *scenario model* to include:
 
 | Scenario mode | Infrastructure | Intended observations |
 |---|---|---|
@@ -43,11 +43,11 @@ FORGE-RI **does not replace or remove** the virtual-machine-based capabilities o
 | **Physical** | Real PLCs, robots, sensors, actuators, industrial PCs and IoT gateways | Network traces, available controller logs/registers, sensor values, machine state and gateway records |
 | **Hybrid** | Real equipment interacting with virtual hosts, emulated PLCs or 3D twins | Correlated physical and virtual events, command paths, state changes and detection results |
 
-**Implementation status:** the README below documents an existing OpenStack-centered DFIR baseline. The real-asset onboarding, TwinAxisLab integration and FORGE-DT observability discussed here are integration objectives, not a declaration that the current FORGE-RI repository already implements or validates every capability.
+**Implementation status:** the README below documents an existing OpenStack-centered DFIR baseline. The real-asset onboarding, TwinAxisLab integration and FORGE-DT observability discussed here are integration objectives, not a declaration that the current FORGE-HI repository already implements or validates every capability.
 
 ### Integration with TwinAxisLab
 
-The planned industrial 3D integration will draw on [TwinAxisLab](https://github.com/Younyat/TwinAxisLab). Its independently documented capabilities include asset import, mechanical/kinematic models, functional components, industrial signal mapping, live twin monitoring, historical replay and connectivity through Modbus, MQTT, and an OPC UA gateway. FORGE-RI should use these as a **separate engineering and operational layer**, not silently treat 3D geometry or its runtime as original forensic evidence.
+The planned industrial 3D integration will draw on [TwinAxisLab](https://github.com/Younyat/TwinAxisLab). Its independently documented capabilities include asset import, mechanical/kinematic models, functional components, industrial signal mapping, live twin monitoring, historical replay and connectivity through Modbus, MQTT, and an OPC UA gateway. FORGE-HI should use these as a **separate engineering and operational layer**, not silently treat 3D geometry or its runtime as original forensic evidence.
 
 The integration target includes:
 
@@ -56,7 +56,7 @@ The integration target includes:
 - explicit signal bindings for industrial controller variables and sensor telemetry;
 - observation of *reported* versus *expected* or *desired* state, with source and quality metadata;
 - safe read-only inspection by default and separately authorized, controlled command pathways;
-- collection of event and trace records as potential input to the FORGE-RI preservation pipeline;
+- collection of event and trace records as potential input to the FORGE-HI preservation pipeline;
 - replay of historical state **without replay-triggered commands to physical equipment**.
 
 ### Integration with FORGE-DT
@@ -69,7 +69,7 @@ The integration target includes:
 - structured uncertainty where real-world visibility is incomplete;
 - separation between forensic observations, modeled expectations, and derived conclusions.
 
-These digital-twin capabilities must be integrated and evaluated within FORGE-RI before they can be claimed as operational features of this repository.
+These digital-twin capabilities must be integrated and evaluated within FORGE-HI before they can be claimed as operational features of this repository.
 
 ### Safety and scientific boundary
 
@@ -79,7 +79,7 @@ A physical industrial process is **not** equivalent to a disposable virtual test
 
 ## 1. Infrastructure Deployment
 
-The **legacy virtualized deployment mode** uses a local OpenStack environment. FORGE-RI additionally targets real industrial assets and mixed physical–virtual scenarios; these modes do **not** inherently require that physical PLCs, robots, or gateways run inside OpenStack. Physical connectivity, credentials, network segmentation, safety interlocks, and compatible acquisition backends must be configured separately. The commands below describe the retained OpenStack workflow, not a verified universal installer for physical integration.
+The **legacy virtualized deployment mode** uses a local OpenStack environment. FORGE-HI additionally targets real industrial assets and mixed physical–virtual scenarios; these modes do **not** inherently require that physical PLCs, robots, or gateways run inside OpenStack. Physical connectivity, credentials, network segmentation, safety interlocks, and compatible acquisition backends must be configured separately. The commands below describe the retained OpenStack workflow, not a verified universal installer for physical integration.
 
 ### 1.1 Baseline Host Requirements
 
@@ -127,7 +127,7 @@ and avoid committing environment-specific credentials.
 
 ### 1.3 Start the Platform UI
 
-To launch the FORGE-RI dashboards, run:
+To launch the FORGE-HI dashboards, run:
 
 ```bash
 bash start_dashboard.sh
@@ -153,7 +153,7 @@ After the infrastructure is available, the platform workflow can be executed fro
 
 ## 2. Platform Workflow
 
-FORGE-RI retains the original virtual DFIR workflow and extends its target architecture toward physical and hybrid scenarios. The existing sequence is:
+FORGE-HI retains the original virtual DFIR workflow and extends its target architecture toward physical and hybrid scenarios. The existing sequence is:
 
 1. **Deploy the OpenStack infrastructure**
 2. **Start the platform dashboards**
@@ -181,7 +181,7 @@ When the corresponding integrations are available, an experimental run should ad
 
 ## 3. Scientific Workflow Model
 
-FORGE-RI is not designed as a collection of isolated tools. It preserves the controlled DFIR methodology of the virtualized IT/OT baseline while broadening the *target scope* to real industrial systems and their digital counterparts. Actual coverage of physical sources depends on device access, supported protocols, time synchronization and acquisition readiness.
+FORGE-HI is not designed as a collection of isolated tools. It preserves the controlled DFIR methodology of the virtualized IT/OT baseline while broadening the *target scope* to real industrial systems and their digital counterparts. Actual coverage of physical sources depends on device access, supported protocols, time synchronization and acquisition readiness.
 
 The platform follows a simple methodological rule:
 
@@ -268,15 +268,15 @@ The next section describes the main platform services that expose these layers t
 
 ## 4. Main Platform Services
 
-FORGE-RI is organized into a set of dashboards and services that expose the complete experimental workflow, from scenario creation to incident execution, forensic acquisition, analysis, reconstruction, and cross-run comparison.
+FORGE-HI is organized into a set of dashboards and services that expose the complete experimental workflow, from scenario creation to incident execution, forensic acquisition, analysis, reconstruction, and cross-run comparison.
 
 The services are presented in the same order in which a user normally interacts with the platform.
 
 ---
 
-### 4.1 FORGE-RI Home Dashboard
+### 4.1 FORGE-HI Home Dashboard
 
-The **FORGE-RI Home Dashboard** is the main entry point of the platform.
+The **FORGE-HI Home Dashboard** is the main entry point of the platform.
 
 It provides a unified overview of the current experimental environment, including scenario state, operational readiness, forensic readiness, reconstruction status, and scientific evidence indicators.
 
@@ -295,7 +295,7 @@ It exposes:
 - CPR-oriented reconstruction information;
 - recent platform activity.
 
-![FORGE-RI Home Dashboard](Images_readme/FORGE_VI_HOME_PAGE.png)
+![FORGE-HI Home Dashboard](Images_readme/FORGE_VI_HOME_PAGE.png)
 
 The workflow then moves from the global platform overview to scenario construction.
 
@@ -329,7 +329,7 @@ The IT scenario can then be extended with industrial components.
 
 The **Industrial Scenario Editor** extends the base IT topology with OT-oriented components.
 
-It allows the user to add industrial nodes such as PLC, SCADA, or HMI components and connect them to the existing IT scenario. In the existing implementation this creates a virtualized IT/OT environment suitable for controlled industrial cybersecurity and DFIR experimentation. The FORGE-RI extension additionally specifies discoverable physical assets and mixed topologies; support for individual devices must be verified rather than assumed.
+It allows the user to add industrial nodes such as PLC, SCADA, or HMI components and connect them to the existing IT scenario. In the existing implementation this creates a virtualized IT/OT environment suitable for controlled industrial cybersecurity and DFIR experimentation. The FORGE-HI extension additionally specifies discoverable physical assets and mixed topologies; support for individual devices must be verified rather than assumed.
 
 The editor supports:
 
@@ -594,7 +594,7 @@ The final service supports movement of selected artifacts to external laboratory
 
 ### 4.13 Remote Lab Exchange Dashboard
 
-The **Remote Lab Exchange Dashboard** supports controlled exchange of selected artifacts between FORGE-RI and external analysis environments.
+The **Remote Lab Exchange Dashboard** supports controlled exchange of selected artifacts between FORGE-HI and external analysis environments.
 
 It can be used to:
 
@@ -603,7 +603,7 @@ It can be used to:
 - support external tool execution;
 - preserve the distinction between platform-managed evidence and externally produced results.
 
-This service is useful when specialized tools are executed outside the platform while the main experiment remains organized through FORGE-RI.
+This service is useful when specialized tools are executed outside the platform while the main experiment remains organized through FORGE-HI.
 
 ![Remote Lab Exchange Dashboard](Images_readme/LAB_EXCHANGE_DASHBOARD.png)
 
@@ -647,7 +647,7 @@ The existing view includes:
 
 ![3D Campaign Reconstruction View - Two-Repetition Campaign Replay](Images_readme/3D_Campaign_Reconstruction_View.png)
 
-**FORGE-RI extension:** when real industrial devices and their twins become connected, replay records should identify physical versus virtual event sources, preserve original timestamps and mark observational gaps. Replay must remain isolated from live control outputs.
+**FORGE-HI extension:** when real industrial devices and their twins become connected, replay records should identify physical versus virtual event sources, preserve original timestamps and mark observational gaps. Replay must remain isolated from live control outputs.
 
 ---
 
@@ -681,19 +681,19 @@ The intended [FORGE-DT](https://github.com/Younyat/FORGE-DT) integration will as
 
 ### 4.21 Radio Evidence Acquisition (Future Extension)
 
-FORGE-RI may later incorporate RF receivers and wireless-protocol sniffers to acquire IQ recordings, spectrum observations and wireless traffic as additional case evidence. This is a **future integration objective**, not a validated feature of the current repository. Frequency/channel coverage, receiver setup, timing, original data preservation and provenance will be essential for cross-domain correlation.
+FORGE-HI may later incorporate RF receivers and wireless-protocol sniffers to acquire IQ recordings, spectrum observations and wireless traffic as additional case evidence. This is a **future integration objective**, not a validated feature of the current repository. Frequency/channel coverage, receiver setup, timing, original data preservation and provenance will be essential for cross-domain correlation.
 
 ---
 
 ## 5. Evidence Model
 
-FORGE-RI treats evidence handling as part of the experimental procedure. Each incident execution can materialize as a forensic case under the evidence store.
+FORGE-HI treats evidence handling as part of the experimental procedure. Each incident execution can materialize as a forensic case under the evidence store.
 
 A case is identified by a stable case identifier and contains preserved artifacts, metadata, integrity records, custody records, pipeline events, and derived analysis outputs.
 
 ### 5.1 Case as Experimental Unit
 
-In FORGE-RI, the forensic case is the unit used for preservation, analysis, reconstruction, and comparison.
+In FORGE-HI, the forensic case is the unit used for preservation, analysis, reconstruction, and comparison.
 
 A case records:
 
@@ -731,7 +731,7 @@ The exact content depends on the acquisition profile and scenario type.
 
 ### 5.3 Primary and Derived Artifacts
 
-FORGE-RI separates primary evidence from derived artifacts.
+FORGE-HI separates primary evidence from derived artifacts.
 
 Primary evidence includes preserved artifacts such as:
 
@@ -778,7 +778,7 @@ These directories describe an integration schema and do not imply that the curre
 
 ## 6. Acquisition and Preservation Model
 
-FORGE-RI uses profile-conditioned acquisition. This means that the selected trigger and scenario context determine which acquisition procedure is executed.
+FORGE-HI uses profile-conditioned acquisition. This means that the selected trigger and scenario context determine which acquisition procedure is executed.
 
 ### 6.1 Alert-to-Profile Resolution
 
@@ -807,7 +807,7 @@ The platform records:
 
 ### 6.2 Evidence Sources
 
-Depending on the active profile, FORGE-RI can preserve:
+Depending on the active profile, FORGE-HI can preserve:
 
 - network traffic;
 - volatile memory;
@@ -838,7 +838,7 @@ The evaluated industrial baseline is centered on Modbus/TCP-style observation, w
 
 ### 6.4 Integrity and Custody
 
-FORGE-RI records preservation and handling steps through:
+FORGE-HI records preservation and handling steps through:
 
 - manifest entries;
 - cryptographic hashes;
@@ -855,7 +855,7 @@ The next section describes how controlled incident profiles connect the attack l
 
 ## 7. Attack and Detection Model
 
-FORGE-RI uses controlled attack profiles to generate incident conditions under documented constraints.
+FORGE-HI uses controlled attack profiles to generate incident conditions under documented constraints.
 
 Each attack profile can define:
 
@@ -900,7 +900,7 @@ A detection workflow can preserve:
 
 ### 7.3 Safety and Scope
 
-FORGE-RI attack profiles are intended for controlled laboratory scenarios deployed by the platform.
+FORGE-HI attack profiles are intended for controlled laboratory scenarios deployed by the platform.
 
 They are not intended for production systems, unauthorized networks, or uncontrolled environments.
 
@@ -910,7 +910,7 @@ The next section describes how preserved evidence is reconstructed and compared.
 
 ## 8. Reconstruction and Reproducibility
 
-FORGE-RI separates preservation from reconstruction.
+FORGE-HI separates preservation from reconstruction.
 
 A case may be well preserved and still have degraded, ambiguous, or missing causal relations. The reconstruction layer makes this distinction explicit.
 
@@ -952,7 +952,7 @@ CPR treats every expected edge equally; WCPR uses the scenario-defined per-edge 
 
 ### 8.3 Reproducibility Levels
 
-FORGE-RI supports repetition-oriented organization through:
+FORGE-HI supports repetition-oriented organization through:
 
 ```text
 Level A -> re-analysis of the same sealed case
@@ -964,7 +964,7 @@ These levels allow the user to distinguish analytical repeatability, incident re
 
 ### 8.4 Scientific Memory and Comparison Families
 
-FORGE-RI can organize repeated outputs into comparison families.
+FORGE-HI can organize repeated outputs into comparison families.
 
 A comparison family can group cases according to:
 
@@ -984,7 +984,7 @@ The next section gives a practical end-to-end usage sequence.
 
 ## 9. End-to-End Usage Sequence
 
-A complete FORGE-RI workflow can be executed as follows.
+A complete FORGE-HI workflow can be executed as follows.
 
 ### Step 1: Deploy the Infrastructure
 
@@ -1080,7 +1080,7 @@ The inherited virtualized baseline provides:
 - live, read-only **Digital Twin View** with divergence history;
 - controlled laboratory **Fault Injection Dashboard** with effectiveness and rollback reporting.
 
-The FORGE-RI integration roadmap additionally includes physical-asset onboarding, hybrid topologies, TwinAxisLab-derived 3D/kinematic digital twins, FORGE-DT-style state-divergence investigation, and optional later RF acquisition. These items are **integration targets until implemented and verified in FORGE-RI**.
+The FORGE-HI integration roadmap additionally includes physical-asset onboarding, hybrid topologies, TwinAxisLab-derived 3D/kinematic digital twins, FORGE-DT-style state-divergence investigation, and optional later RF acquisition. These items are **integration targets until implemented and verified in FORGE-HI**.
 
 The next section maps the documented baseline capabilities to repository paths.
 
@@ -1140,7 +1140,7 @@ The next section defines the intended scope of the platform.
 
 ## 12. Scope
 
-FORGE-RI is designed for controlled experimentation, research, training, and reproducibility-oriented DFIR workflows across virtual IT/OT environments and, subject to integration and safety validation, real and hybrid industrial infrastructures.
+FORGE-HI is designed for controlled experimentation, research, training, and reproducibility-oriented DFIR workflows across virtual IT/OT environments and, subject to integration and safety validation, real and hybrid industrial infrastructures.
 
 It is intended for:
 
@@ -1167,7 +1167,7 @@ The next section describes safe repository hygiene before sharing or publishing 
 ---
 ## 13. Repository Content and Artifact Management
 
-The FORGE-RI repository retains the source code, scenario definitions, deployment configuration, attack and detection profiles, acquisition procedures, analysis components, documentation, and lightweight metadata required to understand and re-execute the latest documented experimental scenario.
+The FORGE-HI repository retains the source code, scenario definitions, deployment configuration, attack and detection profiles, acquisition procedures, analysis components, documentation, and lightweight metadata required to understand and re-execute the latest documented experimental scenario.
 
 ## Sensitive and Environment-Specific Files
 
@@ -1212,7 +1212,7 @@ wget-log
 
 ## Large Experimental and Forensic Artifacts
 
-A FORGE-RI execution can generate large forensic artifacts, including memory images, disk images or snapshots, network captures, industrial evidence exports, case evidence collections, analysis outputs, and execution-event records.
+A FORGE-HI execution can generate large forensic artifacts, including memory images, disk images or snapshots, network captures, industrial evidence exports, case evidence collections, analysis outputs, and execution-event records.
 
 Typical storage consumption for a completed case, per artifact type:
 
@@ -1287,7 +1287,7 @@ The next section describes where the full evidentiary package for the reported c
 
 ## 14. Historical FORGE-VI Verification Dataset
 
-The historical **FORGE-VI virtualized baseline** verification dataset is distributed separately through Zenodo. It must not be interpreted as validation of new FORGE-RI physical-device or digital-twin integration capabilities.
+The historical **FORGE-VI virtualized baseline** verification dataset is distributed separately through Zenodo. It must not be interpreted as validation of new FORGE-HI physical-device or digital-twin integration capabilities.
 
 The historical virtualized verification dataset contains:
 
