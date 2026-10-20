@@ -29,6 +29,12 @@ Scenario declaration (virtual / physical / hybrid)
   -> cross-run comparison
 ```
 
+## Research evolution
+
+**FORGE-HI** evolves from [FORGE-DT](https://github.com/Younyat/FORGE-DT), which in turn evolves from [FORGE-VI](https://github.com/nicslabdev/FORGE-VI). It extends forensic digital-twin research from virtualized IT/OT scenarios to **real and hybrid industrial environments**, including the connection and observation of physical PLCs, SCADA/HMI systems, industrial sensors, actuators, and IoT devices. Device-specific integration and validation remain subject to the implementation boundaries described below.
+
+The subsequent [FORGE-RFDT](https://github.com/Younyat/FORGE-RFDT) evolution additionally introduces radio-frequency acquisition and analysis.
+
 The next section describes the infrastructure required to run this workflow.
 
 ---
@@ -61,7 +67,7 @@ The integration target includes:
 
 ### Integration with FORGE-DT
 
-[FORGE-DT](https://github.com/Younyat/FORGE-DT) is a related branch of the FORGE family. The intended integration brings digital-twin-oriented analysis into the case-centered workflow, especially:
+[FORGE-DT](https://github.com/Younyat/FORGE-DT) is the preceding stage in the FORGE research evolution. The intended integration brings digital-twin-oriented analysis into the case-centered workflow, especially:
 
 - explicit expected, commanded, observed and reconstructed state models;
 - investigation of state divergence under controlled fault or incident scenarios;
